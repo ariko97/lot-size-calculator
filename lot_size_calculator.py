@@ -25,7 +25,7 @@ st.markdown("""
 .top-layer {
     position: sticky;
     top: 0;
-    left: 50%;
+    left: 55%; /* Shifted slightly to the right */
     transform: translateX(-50%);
     color: #ffb6c1;  /* baby pink */
     font-size: 18px;
