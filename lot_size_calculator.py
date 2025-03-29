@@ -41,7 +41,7 @@ class TradeCalculator:
             colors=['yellow', 'black'],
             autopct='%1.1f%%',
             pctdistance=0.85,
-            textprops=dict(color='black', fontsize=14)
+            textprops=dict(color='white', fontsize=14)
         )
         for text in texts:
             text.set_color('black')
@@ -59,6 +59,7 @@ class TradeCalculator:
         st.pyplot(fig)
 
 # Streamlit App
+st.markdown('<p style="color:pink; font-size:12px;">Made by Ariko with Love</p>', unsafe_allow_html=True)
 st.title('Trade Profit and Loss Calculator with Enhanced Visuals')
 
 account_balance = st.number_input('Account Balance (€)', value=10000.0)
