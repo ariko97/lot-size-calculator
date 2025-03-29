@@ -19,10 +19,19 @@ st.markdown("""
     border-radius: 10px;
 }
 
+.top-layer {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    color: pink;
+    font-size: 12px;
+    z-index: 9999;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<p style="color:pink; font-size:12px;">Made by Ariko with Love 💖</p>', unsafe_allow_html=True)
+st.markdown('<div class="top-layer">Made by Ariko with Love 💖</div>', unsafe_allow_html=True)
 
 # Pip/Point values per instrument
 pip_values = {
