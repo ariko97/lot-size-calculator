@@ -21,35 +21,42 @@ pip_values = {
 }
 
 class LotSizeCalculator:
-    def __init__(self, account_balance, per_trade_loss_limit, risk_per_trade_percentage, instrument):
+    def __init__(self, account_balance, per_trade_loss_limit, desired_profit, risk_reward_ratio, instrument):
         self.account_balance = account_balance
         self.per_trade_loss_limit = per_trade_loss_limit
-        self.risk_per_trade_percentage = risk_per_trade_percentage
+        self.desired_profit = desired_profit
+        self.risk_reward_ratio = risk_reward_ratio
         self.instrument = instrument
         self.pip_value = pip_values[instrument]
 
     def calculate_risk_per_trade(self):
-        return self.per_trade_loss_limit * (self.risk_per_trade_percentage / 100)
+        return self.per_trade_loss_limit
 
     def calculate_lot_size(self):
-        risk_per_trade = self.calculate_risk_per_trade()
-        return abs(risk_per_trade / self.pip_value)
+        return abs(self.per_trade_loss_limit / self.pip_value)
     
+    def calculate_profit_target_pips(self):
+        return self.desired_profit / self.pip_value
+
+    def calculate_best_lot_size(self):
+        return self.desired_profit / (self.pip_value * self.calculate_profit_target_pips())
+
     def display_lot_sizes(self):
         standard_lot_size = self.calculate_lot_size()
         aggressive_lot_size = standard_lot_size * 1.5
         reduced_lot_size = standard_lot_size * 0.5
+        best_lot_size = self.calculate_best_lot_size()
 
         lot_sizes = pd.DataFrame({
-            'Risk Level': ['Standard', 'Aggressive', 'Reduced'],
-            'Lot Size': [standard_lot_size, aggressive_lot_size, reduced_lot_size]
+            'Risk Level': ['Standard', 'Aggressive', 'Reduced', 'Best'],
+            'Lot Size': [standard_lot_size, aggressive_lot_size, reduced_lot_size, best_lot_size]
         })
 
         return lot_sizes
 
     def plot_lot_sizes(self, lot_sizes):
         fig, ax = plt.subplots(figsize=(8, 5))
-        ax.bar(lot_sizes['Risk Level'], lot_sizes['Lot Size'], color=['blue', 'green', 'red'])
+        ax.bar(lot_sizes['Risk Level'], lot_sizes['Lot Size'], color=['blue', 'green', 'red', 'orange'])
         ax.set_title(f'Lot Size Comparison for {self.instrument}')
         ax.set_xlabel('Risk Level')
         ax.set_ylabel('Lot Size')
@@ -60,10 +67,11 @@ st.title('Per Trade Permitted Loss Calculator Tool')
 
 account_balance = st.number_input('Account Balance (€)', value=10129.0)
 per_trade_loss_limit = st.number_input('Per Trade Permitted Loss (€)', value=500.0)
-risk_per_trade_percentage = st.number_input('Risk Per Trade (%)', value=2.0)
+desired_profit = st.number_input('Desired Profit (€)', value=1000.0)
+risk_reward_ratio = st.selectbox('Select Risk/Reward Ratio', [1, 2, 4])
 instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
 
-calculator = LotSizeCalculator(account_balance, per_trade_loss_limit, risk_per_trade_percentage, instrument)
+calculator = LotSizeCalculator(account_balance, per_trade_loss_limit, desired_profit, risk_reward_ratio, instrument)
 lot_sizes = calculator.display_lot_sizes()
 
 st.write(f'## Lot Sizes for {instrument}:')
