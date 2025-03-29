@@ -19,21 +19,24 @@ st.markdown("""
     background-color: rgba(0, 0, 0, 0.75);
     padding: 15px;
     border-radius: 10px;
-    margin-top: 10px; /* Reduced margin to bring elements even closer */
+    margin-top: 20px;
 }
 
 .top-layer {
-    color: #ffb6c1;  /* baby pink */
-    font-size: 14px;
-    font-family: 'Montserrat', sans-serif;  /* New Cooler Font */
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #ffb6c1;
+    font-size: 16px;
+    font-family: 'Montserrat', sans-serif;
     font-weight: 500;
-    margin-bottom: -10px; /* Negative margin to pull the text closer to the title */
-    text-align: center;
+    z-index: 9999;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# Displaying the "Made by Ariko with Love 💖" text above the title
+# Displaying the "Made by Ariko with Love 💖" text at the top
 st.markdown('<div class="top-layer">Made by Ariko with Love 💖</div>', unsafe_allow_html=True)
 
 # Title of the tool
