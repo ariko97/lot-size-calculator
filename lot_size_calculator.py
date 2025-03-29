@@ -2,24 +2,27 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 
-# Custom floral candlestick-style background
-st.markdown(
-    """
-    <style>
-    .stApp {
-        background-image: url('https://raw.githubusercontent.com/ariko97/lot-size-calculator/main/background.png');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        color: white;
-    }
-    .main .block-container {background-color: rgba(0, 0, 0, 0.7); padding: 20px; border-radius: 15px;}
+# Custom background and styling
+st.markdown("""
+<style>
+.stApp {
+    background-image: url('https://raw.githubusercontent.com/ariko97/lot-size-calculator/main/background.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #FFFFFF;
+}
+.css-1y4p8pa, .css-1xarl3l, .css-18e3th9, .css-12w0qpk {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    padding: 10px;
+}
 </style>
-    """,
-    unsafe_allow_html=True
-)
+""", unsafe_allow_html=True)
 
-# Correct Pip/Point values per instrument (value per 1 lot, per point/pip move)
+st.markdown('<p style="color:pink; font-size:12px;">Made by Ariko with Love 💖</p>', unsafe_allow_html=True)
+
+# Pip/Point values per instrument
 pip_values = {
     'US100': 1, 'US500': 1, 'XAUUSD': 10,
     'EURUSD': 10, 'GBPUSD': 10, 'USDJPY': 10, 'USDCAD': 10,
@@ -39,7 +42,7 @@ class TradeCalculator:
         return abs(self.permitted_loss / (stop_loss_points * self.pip_value))
 
     def recommended_setup(self):
-        stop_loss_points = st.number_input('Enter Desired Stop Loss (Points/Pips)', value=50.0)
+        stop_loss_points = st.number_input('Desired Stop Loss (Points/Pips)', value=50.0)
         lot_size = self.calculate_lot_size(stop_loss_points)
         profit_target_points = (self.desired_profit / self.permitted_loss) * stop_loss_points
         risk_percentage = (self.permitted_loss / self.account_balance) * 100
@@ -55,28 +58,27 @@ class TradeCalculator:
         wedges, texts, autotexts = ax.pie(
             [risk_percentage, 100 - risk_percentage],
             labels=['Risk (%)', 'Remaining Balance (%)'],
-            colors=['yellow', 'black'],
+            colors=['#FFD700', '#444444'],
             autopct='%1.1f%%',
             pctdistance=0.75,
             textprops=dict(color='white', fontsize=14)
         )
         for text in texts:
-            text.set_color('black')
+            text.set_color('white')
         ax.set_title('Account Risk Ratio', color='white')
+        fig.patch.set_alpha(0)
         st.pyplot(fig)
 
     def plot_profit_loss(self, setup):
         fig, ax = plt.subplots(figsize=(6, 4))
-        ax.bar(['Profit Target', 'Stop Loss'], [setup.loc[1, 'Value'], setup.loc[2, 'Value']], color=['yellow', 'black'])
+        ax.bar(['Profit Target', 'Stop Loss'], [setup.loc[1, 'Value'], setup.loc[2, 'Value']], color=['#FFD700', '#444444'])
         ax.set_title('Profit vs Loss (Points/Pips)', color='white')
         ax.set_ylabel('Points/Pips', color='white')
         ax.tick_params(colors='white')
-        fig.patch.set_facecolor('none')
-        ax.set_facecolor('none')
+        fig.patch.set_alpha(0)
         st.pyplot(fig)
 
 # Streamlit App
-st.markdown('<p style="color:pink; font-size:12px;">Made by Ariko with Love</p>', unsafe_allow_html=True)
 st.title('Trade Profit and Loss Calculator with Risk Management')
 
 account_balance = st.number_input('Account Balance (€)', value=10000.0)
@@ -90,10 +92,8 @@ setup, risk_percentage = calculator.recommended_setup()
 st.write(f'## Recommended Trade Setup for {instrument}:')
 st.write(setup)
 
-st.write('### Account Risk Ratio')
 calculator.plot_risk_pie(risk_percentage)
-
-st.write('### Profit vs Loss')
 calculator.plot_profit_loss(setup)
+
 
 
