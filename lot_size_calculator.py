@@ -13,7 +13,8 @@ st.markdown(
         background-attachment: fixed;
         color: white;
     }
-    </style>
+    .main .block-container {background-color: rgba(0, 0, 0, 0.7); padding: 20px; border-radius: 15px;}
+</style>
     """,
     unsafe_allow_html=True
 )
@@ -94,4 +95,5 @@ calculator.plot_risk_pie(risk_percentage)
 
 st.write('### Profit vs Loss')
 calculator.plot_profit_loss(setup)
+
 
