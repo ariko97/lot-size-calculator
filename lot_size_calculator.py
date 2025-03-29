@@ -15,14 +15,14 @@ st.markdown("""
 
 .stSelectbox, .stNumberInput, .stSelectbox div[data-baseweb="select"], .stNumberInput div[data-baseweb="input"],
 .css-1y4p8pa, .css-1xarl3l, .css-18e3th9, .css-12w0qpk {
-    background-color: rgba(0, 0, 0, 0.7);
-    border-radius: 10px;
-    padding: 10px;
-    margin-bottom: 5px;
+    background-color: rgba(0, 0, 0, 0.85);
+    border-radius: 5px;
+    padding: 8px;
+    margin-bottom: 4px;
 }
 
 .block-container {
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.75);
     padding: 15px;
     border-radius: 10px;
 }
