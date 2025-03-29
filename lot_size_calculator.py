@@ -49,7 +49,7 @@ pip_values = {
     'US100': 1, 'US500': 1, 'XAUUSD': 10,
     'EURUSD': 10, 'GBPUSD': 10, 'USDJPY': 10, 'USDCAD': 10,
     'AUDUSD': 10, 'NZDUSD': 10,
-    'BTCUSD': 0.01, 'ETHUSD': 0.1, 'SOLUSD': 0.01, 'DOGEUSD': 0.0001
+    'BTCUSD': 100, 'ETHUSD': 10, 'SOLUSD': 1, 'DOGEUSD': 1
 }
 
 class TradeCalculator:
