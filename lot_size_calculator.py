@@ -19,19 +19,19 @@ st.markdown("""
     background-color: rgba(0, 0, 0, 0.75);
     padding: 15px;
     border-radius: 10px;
-    margin-top: 40px; /* Reduced margin to bring elements closer */
+    margin-top: 20px; /* Reduced margin to bring elements even closer */
 }
 
 .top-layer {
     position: relative;
-    top: -10px; /* Slightly closer to the title */
+    top: -30px; /* Really close to the title */
     left: 50%;
     transform: translateX(-50%);
     color: #ffb6c1;  /* baby pink */
     font-size: 14px;
     font-family: 'Montserrat', sans-serif;  /* New Cooler Font */
     font-weight: 500;
-    padding: 5px;
+    padding: 0px;
     z-index: 10000;
 }
 </style>
