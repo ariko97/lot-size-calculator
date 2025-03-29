@@ -115,3 +115,6 @@ st.write(setup)
 
 calculator.plot_risk_pie(risk_percentage)
 calculator.plot_profit_loss(setup)
+
+# Adding dead space at the bottom to avoid Streamlit banner overlap
+st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
