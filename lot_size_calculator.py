@@ -42,12 +42,14 @@ st.markdown('''
 st.markdown('<div class="top-layer">Made by Ariko with Love 💖</div>', unsafe_allow_html=True)
 
 # Title of the tool
-st.title('Crypto Trade Profit and Loss Calculator with Risk Management')
+st.title('Trade Profit and Loss Calculator with Risk Management')
 
 # Pip/Point values per instrument
 pip_values = {
-    'BTCUSD': 1, 'ETHUSD': 0.1, 'SOLUSD': 0.001, 'DOGEUSD': 0.0001,
-    'XAUUSD': 10, 'EURUSD': 10, 'USDJPY': 10, 'NDAQ.NAS': 1, 'US500': 1
+    'US100': 1, 'US500': 1, 'XAUUSD': 10,
+    'EURUSD': 10, 'GBPUSD': 10, 'USDJPY': 10, 'USDCAD': 10,
+    'AUDUSD': 10, 'NZDUSD': 10,
+    'BTCUSD': 1, 'ETHUSD': 0.1, 'SOLUSD': 0.001, 'DOGEUSD': 0.0001
 }
 
 class TradeCalculator:
