@@ -47,7 +47,7 @@ st.title('Crypto Trade Profit and Loss Calculator with Risk Management')
 # Pip/Point values per instrument
 pip_values = {
     'BTCUSD': 1, 'ETHUSD': 0.1, 'SOLUSD': 0.001, 'DOGEUSD': 0.0001,
-    'XAUUSD': 0.1, 'EURUSD': 0.0001, 'USDJPY': 0.01, 'NDAQ.NAS': 0.01, 'US500': 0.1
+    'XAUUSD': 10, 'EURUSD': 10, 'USDJPY': 10, 'NDAQ.NAS': 1, 'US500': 1
 }
 
 class TradeCalculator:
