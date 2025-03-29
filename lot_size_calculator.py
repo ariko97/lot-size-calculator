@@ -1,5 +1,3 @@
-
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
@@ -37,15 +35,24 @@ class TradeCalculator:
 
     def plot_risk_pie(self, risk_percentage):
         fig, ax = plt.subplots(figsize=(6, 6))
-        ax.pie([risk_percentage, 100 - risk_percentage], labels=['Risk (%)', 'Remaining Balance (%)'], colors=['yellow', 'black'], autopct='%1.1f%%')
-        ax.set_title('Account Risk Ratio')
+        wedges, texts, autotexts = ax.pie(
+            [risk_percentage, 100 - risk_percentage],
+            labels=['Risk (%)', 'Remaining Balance (%)'],
+            colors=['yellow', 'black'],
+            autopct='%1.1f%%',
+            textprops=dict(color='white', fontsize=14)
+        )
+        ax.set_title('Account Risk Ratio', color='white')
         st.pyplot(fig)
 
     def plot_profit_loss(self, setup):
         fig, ax = plt.subplots(figsize=(6, 4))
         ax.bar(['Profit Target', 'Stop Loss'], [setup.loc[1, 'Value'], setup.loc[2, 'Value']], color=['yellow', 'black'])
-        ax.set_title('Profit vs Loss (Points/Pips)')
-        ax.set_ylabel('Points/Pips')
+        ax.set_title('Profit vs Loss (Points/Pips)', color='white')
+        ax.set_ylabel('Points/Pips', color='white')
+        ax.tick_params(colors='white')
+        fig.patch.set_facecolor('#333333')
+        ax.set_facecolor('#333333')
         st.pyplot(fig)
 
 # Streamlit App
