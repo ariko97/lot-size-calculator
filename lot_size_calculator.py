@@ -17,25 +17,26 @@ st.markdown("""
     background-color: rgba(0, 0, 0, 0.75);
     padding: 15px;
     border-radius: 10px;
-    margin-top: 60px;  /* Pushes the block container down to avoid covering the label */
+    margin-top: 60px;
 }
 
 .top-layer {
     position: fixed;
-    top: 0px;
+    top: 10px;
     left: 50%;
     transform: translateX(-50%);
     color: #ffb6c1;  /* baby pink */
-    font-size: 16px;
+    font-size: 20px;
     font-weight: bold;
-    z-index: 99999;
-    padding: 5px;
+    z-index: 10000; /* Ensure it's on top of everything */
 }
 </style>
 """, unsafe_allow_html=True)
 
-# Streamlit App
+# Displaying the "Made by Ariko with Love 💖" text at the top
 st.markdown('<div class="top-layer">Made by Ariko with Love 💖</div>', unsafe_allow_html=True)
+
+# Title of the tool
 st.title('Trade Profit and Loss Calculator with Risk Management')
 
 # Pip/Point values per instrument
@@ -109,4 +110,3 @@ st.write(setup)
 
 calculator.plot_risk_pie(risk_percentage)
 calculator.plot_profit_loss(setup)
-
