@@ -7,7 +7,7 @@ st.markdown(
     """
     <style>
     .stApp {
-        background-image: url('https://i.imgur.com/4nXfUch.jpg');
+        background-image: url('https://cdn.openai.com/chat-assets/user-media/file_000000006b2c51f6b26d2019ccdd2503/A_seamless,_digital_illustration_pattern_on_a_dark.png');
         background-size: cover;
         background-repeat: no-repeat;
         background-attachment: fixed;
