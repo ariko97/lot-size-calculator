@@ -6,6 +6,7 @@ import streamlit as st
 # Pip values for different instruments (per standard lot, 1 lot)
 pip_values = {
     'US100': 1,  # NASDAQ 100 (0.01 pip = $1 for 1 lot)
+    'US500': 1,  # S&P 500 (0.01 pip = $1 for 1 lot)
     'XAUUSD': 10,  # Gold (0.01 pip = $10 for 1 lot)
     'EURUSD': 10,  # Forex Major (0.0001 pip = $10 for 1 lot)
     'GBPUSD': 10,
@@ -20,22 +21,59 @@ pip_values = {
 }
 
 class LotSizeCalculator:
-    def __init__(self, account_balance, daily_loss_limit, risk_per_trade_percentage, instrument):
+    def __init__(self, account_balance, daily_loss_limit, risk_per_trade_percentage, instrument, leverage):
         self.account_balance = account_balance
         self.daily_loss_limit = daily_loss_limit
         self.risk_per_trade_percentage = risk_per_trade_percentage
         self.instrument = instrument
         self.pip_value = pip_values[instrument]
+        self.leverage = leverage
 
     def calculate_risk_per_trade(self):
         return self.daily_loss_limit * (self.risk_per_trade_percentage / 100)
 
-    def calculate_lot_size(self, average_loss):
+    def calculate_lot_size(self):
         risk_per_trade = self.calculate_risk_per_trade()
-        if average_loss == 0:
-            return 0
-        return abs(risk_per_trade / (average_loss / self.pip_value))
+        effective_balance = self.account_balance * self.leverage
+        return abs(risk_per_trade / self.pip_value) * effective_balance / self.account_balance
     
+    def display_lot_sizes(self):
+        standard_lot_size = self.calculate_lot_size()
+        aggressive_lot_size = standard_lot_size * 1.5
+        reduced_lot_size = standard_lot_size * 0.5
+
+        lot_sizes = pd.DataFrame({
+            'Risk Level': ['Standard', 'Aggressive', 'Reduced'],
+            'Lot Size': [standard_lot_size, aggressive_lot_size, reduced_lot_size]
+        })
+
+        return lot_sizes
+
+    def plot_lot_sizes(self, lot_sizes):
+        fig, ax = plt.subplots(figsize=(8, 5))
+        ax.bar(lot_sizes['Risk Level'], lot_sizes['Lot Size'], color=['blue', 'green', 'red'])
+        ax.set_title(f'Lot Size Comparison for {self.instrument}')
+        ax.set_xlabel('Risk Level')
+        ax.set_ylabel('Lot Size')
+        st.pyplot(fig)
+
+# Streamlit App
+st.title('Lot Size Calculator Tool')
+
+account_balance = st.number_input('Account Balance (€)', value=10129.0)
+daily_loss_limit = st.number_input('Daily Permitted Loss (€)', value=500.0)
+risk_per_trade_percentage = st.number_input('Risk Per Trade (%)', value=2.0)
+instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
+leverage = st.selectbox('Select Leverage', [1, 30, 100, 500])
+
+calculator = LotSizeCalculator(account_balance, daily_loss_limit, risk_per_trade_percentage, instrument, leverage)
+lot_sizes = calculator.display_lot_sizes()
+
+st.write(f'## Lot Sizes for {instrument} with 1:{leverage} Leverage:')
+st.write(lot_sizes)
+
+calculator.plot_lot_sizes(lot_sizes)
+
     def display_lot_sizes(self, average_loss):
         standard_lot_size = self.calculate_lot_size(average_loss)
         aggressive_lot_size = standard_lot_size * 1.5
