@@ -2,12 +2,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 
-# Set Streamlit background
+# Custom floral candlestick-style background
 st.markdown(
     """
     <style>
     .reportview-container {
-        background: #222222;
+        background: url('https://i.imgur.com/4nXfUch.jpg');
+        background-size: cover;
         color: white;
     }
     </style>
@@ -67,8 +68,8 @@ class TradeCalculator:
         ax.set_title('Profit vs Loss (Points/Pips)', color='white')
         ax.set_ylabel('Points/Pips', color='white')
         ax.tick_params(colors='white')
-        fig.patch.set_facecolor('#222222')
-        ax.set_facecolor('#222222')
+        fig.patch.set_facecolor('none')
+        ax.set_facecolor('none')
         st.pyplot(fig)
 
 # Streamlit App
