@@ -1,9 +1,10 @@
 
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 
-# Pip/Point values for different instruments (per standard lot, 1 lot)
+# Correct Pip/Point values per instrument (value per 1 lot, per point/pip move)
 pip_values = {
     'US100': 1, 'US500': 1, 'XAUUSD': 10,
     'EURUSD': 10, 'GBPUSD': 10, 'USDJPY': 10, 'USDCAD': 10,
@@ -19,24 +20,19 @@ class TradeCalculator:
         self.permitted_loss = permitted_loss
         self.pip_value = pip_values[instrument]
 
-    def calculate_pips(self, amount):
-        return amount / self.pip_value
-
-    def calculate_lot_size(self):
-        return abs(self.permitted_loss / self.pip_value)
-
-    def calculate_risk_percentage(self):
-        return (self.permitted_loss / self.account_balance) * 100
+    def calculate_lot_size(self, stop_loss_points):
+        return abs(self.permitted_loss / (stop_loss_points * self.pip_value))
 
     def recommended_setup(self):
-        lot_size = self.calculate_lot_size()
-        profit_pips = self.calculate_pips(self.desired_profit)
-        loss_pips = self.calculate_pips(self.permitted_loss)
-        risk_percentage = self.calculate_risk_percentage()
+        # Suggesting realistic stop loss (points/pips)
+        stop_loss_points = st.number_input('Enter Desired Stop Loss (Points/Pips)', value=50.0)
+        lot_size = self.calculate_lot_size(stop_loss_points)
+        profit_target_points = (self.desired_profit / self.permitted_loss) * stop_loss_points
+        risk_percentage = (self.permitted_loss / self.account_balance) * 100
 
         setup = pd.DataFrame({
-            'Metric': ['Recommended Lot Size', 'Profit Target (Pips)', 'Stop Loss (Pips)', 'Risk Percentage (%)'],
-            'Value': [round(lot_size, 2), round(profit_pips, 2), round(loss_pips, 2), round(risk_percentage, 2)]
+            'Metric': ['Recommended Lot Size', 'Profit Target (Points/Pips)', 'Stop Loss (Points/Pips)', 'Risk Percentage (%)'],
+            'Value': [round(lot_size, 2), round(profit_target_points, 2), round(stop_loss_points, 2), round(risk_percentage, 2)]
         })
         return setup
 
@@ -48,12 +44,12 @@ class TradeCalculator:
         st.pyplot(fig)
 
 # Streamlit App
-st.title('Trade Profit and Loss Calculator with Risk Management')
+st.title('Trade Profit and Loss Calculator with Realistic Risk Management')
 
-account_balance = st.number_input('Account Balance (€)', value=10129.0)
+account_balance = st.number_input('Account Balance (€)', value=10000.0)
 instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
 desired_profit = st.number_input('Desired Profit (€)', value=500.0)
-permitted_loss = st.number_input('Permitted Loss (€)', value=250.0)
+permitted_loss = st.number_input('Permitted Loss (€)', value=70.0)
 
 calculator = TradeCalculator(account_balance, instrument, desired_profit, permitted_loss)
 setup = calculator.recommended_setup()
