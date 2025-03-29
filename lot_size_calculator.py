@@ -24,8 +24,12 @@ st.markdown("""
     top: 10px;
     right: 10px;
     color: pink;
-    font-size: 12px;
+    font-size: 14px;
+    font-weight: bold;
     z-index: 9999;
+    background-color: rgba(0, 0, 0, 0.6);
+    padding: 5px 10px;
+    border-radius: 8px;
 }
 
 </style>
@@ -105,3 +109,4 @@ st.write(setup)
 
 calculator.plot_risk_pie(risk_percentage)
 calculator.plot_profit_loss(setup)
+
