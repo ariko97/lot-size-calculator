@@ -1,6 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
+import requests
 
 # Custom background and styling
 st.markdown('''
@@ -38,31 +39,34 @@ st.markdown('''
 </style>
 ''', unsafe_allow_html=True)
 
-import requests
+# Function to fetch current price from CoinGecko
+@st.cache_data
 
 def get_crypto_price(crypto):
     url = f'https://api.coingecko.com/api/v3/simple/price?ids={crypto}&vs_currencies=usd'
-    response = requests.get(url).json()
-    return response[crypto]['usd']
+    try:
+        response = requests.get(url).json()
+        return response[crypto]['usd']
+    except:
+        return None
 
 # Pip/Point values per instrument
 pip_values = {
     'US100': 1, 'US500': 1, 'XAUUSD': 10,
     'EURUSD': 10, 'GBPUSD': 10, 'USDJPY': 10, 'USDCAD': 10,
-    'AUDUSD': 10, 'NZDUSD': 10,
-    'BTCUSD': get_crypto_price('bitcoin'),
-    'ETHUSD': get_crypto_price('ethereum'),
-    'SOLUSD': get_crypto_price('solana') / 1000,  # 1 pip = 0.001
-    'DOGEUSD': get_crypto_price('dogecoin') / 10000  # 1 pip = 0.0001
+    'AUDUSD': 10, 'NZDUSD': 10
 }
 
+# Adding crypto assets
+crypto_assets = ['bitcoin', 'ethereum', 'solana', 'dogecoin']
+
 class TradeCalculator:
-    def __init__(self, account_balance, instrument, desired_profit, permitted_loss):
+    def __init__(self, account_balance, instrument, desired_profit, permitted_loss, pip_value):
         self.account_balance = account_balance
         self.instrument = instrument
         self.desired_profit = desired_profit
         self.permitted_loss = permitted_loss
-        self.pip_value = pip_values[instrument]
+        self.pip_value = pip_value
 
     def calculate_lot_size(self, stop_loss_points):
         return abs(self.permitted_loss / (stop_loss_points * self.pip_value))
@@ -78,16 +82,33 @@ class TradeCalculator:
         })
         return setup, risk_percentage
 
-# User Inputs
+
 account_balance = st.number_input('Account Balance or Daily Loss Balance (€)', value=10000.0)
-instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
+instrument = st.selectbox('Select Instrument', list(pip_values.keys()) + crypto_assets)
 desired_profit = st.number_input('Desired Profit (€)', value=500.0)
 permitted_loss = st.number_input('Permitted Loss (€)', value=70.0)
 stop_loss_points = st.number_input('Desired Stop Loss (Points/Pips)', value=50.0)
 
-# Calculator
-calculator = TradeCalculator(account_balance, instrument, desired_profit, permitted_loss)
-setup, risk_percentage = calculator.recommended_setup(stop_loss_points)
+# Fetch pip value based on instrument
+if instrument in pip_values:
+    pip_value = pip_values[instrument]
+elif instrument == 'bitcoin':
+    pip_value = get_crypto_price('bitcoin')
+elif instrument == 'ethereum':
+    pip_value = get_crypto_price('ethereum')
+elif instrument == 'solana':
+    sol_price = get_crypto_price('solana')
+    pip_value = sol_price / 1000 if sol_price else 1  # 1 pip = 0.001
+elif instrument == 'dogecoin':
+    doge_price = get_crypto_price('dogecoin')
+    pip_value = doge_price / 10000 if doge_price else 1  # 1 pip = 0.0001
 
-st.write(f'## Recommended Trade Setup for {instrument}:')
-st.write(setup)
+# Calculator
+if pip_value:
+    calculator = TradeCalculator(account_balance, instrument, desired_profit, permitted_loss, pip_value)
+    setup, risk_percentage = calculator.recommended_setup(stop_loss_points)
+
+    st.write(f'## Recommended Trade Setup for {instrument}:')
+    st.write(setup)
+else:
+    st.write('Unable to fetch the pip value. Please try again later.')
