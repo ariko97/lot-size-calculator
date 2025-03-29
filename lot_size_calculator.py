@@ -22,16 +22,13 @@ st.markdown("""
 
 .top-layer {
     position: fixed;
-    top: 40px;
+    top: 20px;
     left: 50%;
     transform: translateX(-50%);  /* Center it horizontally */
     color: #ffb6c1;  /* baby pink */
-    font-size: 20px;
+    font-size: 14px;  /* Smaller font size */
     font-weight: bold;
     z-index: 99999; /* Extremely high z-index to ensure visibility */
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 8px 12px;
-    border-radius: 10px;
 }
 
 </style>
@@ -109,4 +106,6 @@ st.write(f'## Recommended Trade Setup for {instrument}:')
 st.write(setup)
 
 calculator.plot_risk_pie(risk_percentage)
+calculator.plot_profit_loss(setup)
+
 calculator.plot_profit_loss(setup)
