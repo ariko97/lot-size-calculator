@@ -35,8 +35,6 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="top-layer">Made by Ariko with Love 💖</div>', unsafe_allow_html=True)
-
 # Pip/Point values per instrument
 pip_values = {
     'US100': 1, 'US500': 1, 'XAUUSD': 10,
@@ -93,6 +91,7 @@ class TradeCalculator:
         st.pyplot(fig)
 
 # Streamlit App
+st.markdown('<div class="top-layer">Made by Ariko with Love 💖</div>', unsafe_allow_html=True)
 st.title('Trade Profit and Loss Calculator with Risk Management')
 
 account_balance = st.number_input('Account Balance (€)', value=10000.0)
@@ -109,4 +108,3 @@ st.write(setup)
 
 calculator.plot_risk_pie(risk_percentage)
 calculator.plot_profit_loss(setup)
-
