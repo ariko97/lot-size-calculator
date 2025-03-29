@@ -100,7 +100,7 @@ class TradeCalculator:
         st.pyplot(fig)
 
 # User Inputs
-account_balance = st.number_input('Account Balance (€)', value=10000.0)
+account_balance = st.number_input('Account Balance or Permited Daily loss of Account (€)', value=10000.0)
 instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
 desired_profit = st.number_input('Desired Profit (€)', value=500.0)
 permitted_loss = st.number_input('Permitted Loss (€)', value=70.0)
