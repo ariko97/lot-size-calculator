@@ -17,6 +17,7 @@ st.markdown("""
     background-color: rgba(0, 0, 0, 0.75);
     padding: 15px;
     border-radius: 10px;
+    margin-top: 50px;  /* Pushes the block container down to avoid covering the label */
 }
 
 .top-layer {
@@ -26,7 +27,7 @@ st.markdown("""
     color: pink;
     font-size: 14px;
     font-weight: bold;
-    z-index: 9999;
+    z-index: 99999; /* Extremely high z-index to ensure visibility */
     background-color: rgba(0, 0, 0, 0.6);
     padding: 5px 10px;
     border-radius: 8px;
