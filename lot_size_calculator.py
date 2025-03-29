@@ -1,6 +1,6 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import streamlit as st
+import plotly.express as px
 
 # Custom background and styling
 st.markdown("""
@@ -12,10 +12,10 @@ st.markdown("""
     background-attachment: fixed;
     color: #FFFFFF;
 }
-.css-1y4p8pa, .css-1xarl3l, .css-18e3th9, .css-12w0qpk {
+[data-testid="stNumberInput"], [data-testid="stSelectbox"] {
     background-color: rgba(0, 0, 0, 0.7);
     border-radius: 10px;
-    padding: 10px;
+    padding: 5px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -48,52 +48,44 @@ class TradeCalculator:
         risk_percentage = (self.permitted_loss / self.account_balance) * 100
 
         setup = pd.DataFrame({
-            'Metric': ['Recommended Lot Size', 'Profit Target (Points/Pips)', 'Stop Loss (Points/Pips)', 'Risk Percentage (%)'],
+            'Metric': ['Lot Size', 'Profit Target', 'Stop Loss', 'Risk %'],
             'Value': [round(lot_size, 2), round(profit_target_points, 2), round(stop_loss_points, 2), round(risk_percentage, 2)]
         })
         return setup, risk_percentage
 
     def plot_risk_pie(self, risk_percentage):
-        fig, ax = plt.subplots(figsize=(6, 6))
-        wedges, texts, autotexts = ax.pie(
-            [risk_percentage, 100 - risk_percentage],
-            labels=['Risk (%)', 'Remaining Balance (%)'],
-            colors=['#FFD700', '#444444'],
-            autopct='%1.1f%%',
-            pctdistance=0.75,
-            textprops=dict(color='white', fontsize=14)
+        fig = px.pie(
+            names=['Risk (%)', 'Remaining Balance (%)'],
+            values=[risk_percentage, 100 - risk_percentage],
+            color_discrete_sequence=['#FF6361', '#58508D'],
+            hole=0.4,
+            title='Account Risk Ratio'
         )
-        for text in texts:
-            text.set_color('white')
-        ax.set_title('Account Risk Ratio', color='white')
-        fig.patch.set_alpha(0)
-        st.pyplot(fig)
+        fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', font_color='white')
+        st.plotly_chart(fig)
 
     def plot_profit_loss(self, setup):
-        fig, ax = plt.subplots(figsize=(6, 4))
-        ax.bar(['Profit Target', 'Stop Loss'], [setup.loc[1, 'Value'], setup.loc[2, 'Value']], color=['#FFD700', '#444444'])
-        ax.set_title('Profit vs Loss (Points/Pips)', color='white')
-        ax.set_ylabel('Points/Pips', color='white')
-        ax.tick_params(colors='white')
-        fig.patch.set_alpha(0)
-        st.pyplot(fig)
+        fig = px.bar(
+            setup.iloc[1:3], x='Metric', y='Value',
+            color='Metric', color_discrete_sequence=['#FFA600', '#BC5090'],
+            title='Profit vs. Loss (Points/Pips)'
+        )
+        fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', font_color='white', showlegend=False)
+        st.plotly_chart(fig)
 
 # Streamlit App
-st.title('Trade Profit and Loss Calculator with Risk Management')
+st.title('📈 Trade Calculator with Risk Management')
 
 account_balance = st.number_input('Account Balance (€)', value=10000.0)
-instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
+instrument = st.selectbox('Instrument', list(pip_values.keys()))
 desired_profit = st.number_input('Desired Profit (€)', value=500.0)
 permitted_loss = st.number_input('Permitted Loss (€)', value=70.0)
 
 calculator = TradeCalculator(account_balance, instrument, desired_profit, permitted_loss)
 setup, risk_percentage = calculator.recommended_setup()
 
-st.write(f'## Recommended Trade Setup for {instrument}:')
-st.write(setup)
+st.subheader(f'Recommended Setup for {instrument}:')
+st.dataframe(setup, hide_index=True, use_container_width=True)
 
 calculator.plot_risk_pie(risk_percentage)
 calculator.plot_profit_loss(setup)
-
-
-
