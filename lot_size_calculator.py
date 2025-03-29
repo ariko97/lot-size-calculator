@@ -5,6 +5,8 @@ import streamlit as st
 # Custom background and styling
 st.markdown("""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+
 .stApp {
     background-image: url('https://raw.githubusercontent.com/ariko97/lot-size-calculator/main/background.png');
     background-size: cover;
@@ -26,9 +28,10 @@ st.markdown("""
     left: 50%;
     transform: translateX(-50%);
     color: #ffb6c1;  /* baby pink */
-    font-size: 20px;
-    font-weight: bold;
-    padding: 8px;
+    font-size: 16px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    padding: 5px;
     z-index: 10000;
 }
 </style>
