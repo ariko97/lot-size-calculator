@@ -21,14 +21,15 @@ st.markdown("""
 }
 
 .top-layer {
-    position: fixed;
-    top: 10px;
+    position: sticky;
+    top: 0;
     left: 50%;
     transform: translateX(-50%);
     color: #ffb6c1;  /* baby pink */
     font-size: 20px;
     font-weight: bold;
-    z-index: 10000; /* Ensure it's on top of everything */
+    padding: 8px;
+    z-index: 10000;
 }
 </style>
 """, unsafe_allow_html=True)
