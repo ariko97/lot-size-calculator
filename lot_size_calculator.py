@@ -7,7 +7,7 @@ st.markdown(
     """
     <style>
     .stApp {
-        background-image: url('https://cdn.openai.com/chat-assets/user-media/file_000000006b2c51f6b26d2019ccdd2503/A_seamless,_digital_illustration_pattern_on_a_dark.png');
+        background-image: url('https://raw.githubusercontent.com/ariko97/lot-size-calculator/main/background.png');
         background-size: cover;
         background-repeat: no-repeat;
         background-attachment: fixed;
@@ -94,3 +94,4 @@ calculator.plot_risk_pie(risk_percentage)
 
 st.write('### Profit vs Loss')
 calculator.plot_profit_loss(setup)
+
