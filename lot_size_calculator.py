@@ -57,7 +57,6 @@ pip_values = {
     'AUDUSD': 10, 'NZDUSD': 10
 }
 
-# Adding crypto assets
 crypto_assets = ['bitcoin', 'ethereum', 'solana', 'dogecoin']
 
 class TradeCalculator:
@@ -82,6 +81,24 @@ class TradeCalculator:
         })
         return setup, risk_percentage
 
+    def plot_risk_pie(self, risk_percentage):
+        fig, ax = plt.subplots(figsize=(6, 6))
+        wedges, texts, autotexts = ax.pie(
+            [risk_percentage, 100 - risk_percentage],
+            labels=['Risk (%)', 'Remaining Balance (%)'],
+            colors=['#FFD700', '#444444'],
+            autopct='%1.1f%%',
+            pctdistance=0.75,
+            textprops=dict(color='white', fontsize=14)
+        )
+        st.pyplot(fig)
+
+    def plot_profit_loss(self, setup):
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.bar(['Profit Target', 'Stop Loss'], [setup.loc[1, 'Value'], setup.loc[2, 'Value']], color=['#FFD700', '#444444'])
+        ax.set_title('Profit vs Loss (Points/Pips)', color='white')
+        ax.set_ylabel('Points/Pips', color='white')
+        st.pyplot(fig)
 
 account_balance = st.number_input('Account Balance or Daily Loss Balance (€)', value=10000.0)
 instrument = st.selectbox('Select Instrument', list(pip_values.keys()) + crypto_assets)
@@ -103,12 +120,15 @@ elif instrument == 'dogecoin':
     doge_price = get_crypto_price('dogecoin')
     pip_value = doge_price / 10000 if doge_price else 1  # 1 pip = 0.0001
 
-# Calculator
 if pip_value:
     calculator = TradeCalculator(account_balance, instrument, desired_profit, permitted_loss, pip_value)
     setup, risk_percentage = calculator.recommended_setup(stop_loss_points)
 
     st.write(f'## Recommended Trade Setup for {instrument}:')
     st.write(setup)
+
+    calculator.plot_risk_pie(risk_percentage)
+    calculator.plot_profit_loss(setup)
+
 else:
     st.write('Unable to fetch the pip value. Please try again later.')
