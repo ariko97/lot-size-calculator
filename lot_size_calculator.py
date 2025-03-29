@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import streamlit as st
 
 # Custom background and styling
-st.markdown("""
+st.markdown('''
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap'); /* Cooler Font */
 
@@ -36,20 +36,18 @@ st.markdown("""
     text-align: center;
 }
 </style>
-""", unsafe_allow_html=True)
+''', unsafe_allow_html=True)
 
 # Displaying the "Made by Ariko with Love 💖" text at the top center above the title
 st.markdown('<div class="top-layer">Made by Ariko with Love 💖</div>', unsafe_allow_html=True)
 
 # Title of the tool
-st.title('Trade Profit and Loss Calculator with Risk Management')
+st.title('Crypto Trade Profit and Loss Calculator with Risk Management')
 
 # Pip/Point values per instrument
 pip_values = {
-    'US100': 1, 'US500': 1, 'XAUUSD': 10,
-    'EURUSD': 10, 'GBPUSD': 10, 'USDJPY': 10, 'USDCAD': 10,
-    'AUDUSD': 10, 'NZDUSD': 10,
-    'BTCUSD': 100, 'ETHUSD': 10, 'SOLUSD': 1, 'DOGEUSD': 1
+    'BTCUSD': 1, 'ETHUSD': 0.1, 'SOLUSD': 0.001, 'DOGEUSD': 0.0001,
+    'XAUUSD': 0.1, 'EURUSD': 0.0001, 'USDJPY': 0.01, 'NDAQ.NAS': 0.01, 'US500': 0.1
 }
 
 class TradeCalculator:
