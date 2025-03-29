@@ -19,12 +19,12 @@ st.markdown("""
     background-color: rgba(0, 0, 0, 0.75);
     padding: 15px;
     border-radius: 10px;
-    margin-top: 60px;
+    margin-top: 40px; /* Reduced margin to bring elements closer */
 }
 
 .top-layer {
     position: relative;
-    top: -20px;
+    top: -10px; /* Slightly closer to the title */
     left: 50%;
     transform: translateX(-50%);
     color: #ffb6c1;  /* baby pink */
