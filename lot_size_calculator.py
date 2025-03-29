@@ -6,9 +6,11 @@ import streamlit as st
 st.markdown(
     """
     <style>
-    .reportview-container {
-        background: url('https://i.imgur.com/4nXfUch.jpg');
+    .stApp {
+        background-image: url('https://i.imgur.com/4nXfUch.jpg');
         background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
         color: white;
     }
     </style>
