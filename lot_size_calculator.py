@@ -5,7 +5,7 @@ import streamlit as st
 # Custom background and styling
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500&display=swap'); /* Cooler Font */
 
 .stApp {
     background-image: url('https://raw.githubusercontent.com/ariko97/lot-size-calculator/main/background.png');
@@ -23,13 +23,13 @@ st.markdown("""
 }
 
 .top-layer {
-    position: sticky;
-    top: 0;
+    position: relative;
+    top: -20px;
     left: 50%;
     transform: translateX(-50%);
     color: #ffb6c1;  /* baby pink */
-    font-size: 16px;
-    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-family: 'Montserrat', sans-serif;  /* New Cooler Font */
     font-weight: 500;
     padding: 5px;
     z-index: 10000;
@@ -37,7 +37,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# Displaying the "Made by Ariko with Love 💖" text at the top
+# Displaying the "Made by Ariko with Love 💖" text above the title
 st.markdown('<div class="top-layer">Made by Ariko with Love 💖</div>', unsafe_allow_html=True)
 
 # Title of the tool
