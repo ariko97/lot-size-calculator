@@ -13,6 +13,7 @@ st.markdown("""
     background-repeat: no-repeat;
     background-attachment: fixed;
     color: #FFFFFF;
+    padding-bottom: 100px; /* Adding bottom padding to avoid overlap with Streamlit banner */
 }
 
 .block-container {
