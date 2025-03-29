@@ -12,13 +12,21 @@ st.markdown("""
     background-attachment: fixed;
     color: #FFFFFF;
 }
-.css-1y4p8pa, .css-1xarl3l, .css-18e3th9, .css-12w0qpk, .stSelectbox, .stNumberInput, 
-.stSelectbox div[data-baseweb="select"], .stNumberInput div[data-baseweb="input"],
-.css-1siy2j7, .css-1kyxreq, .css-q8sbsg, .css-1g6gooi, .st-eb, .stNumberInput, .stSelectbox {
-    background-color: rgba(0, 0, 0, 0.6);
+
+.stSelectbox, .stNumberInput, .stSelectbox div[data-baseweb="select"], .stNumberInput div[data-baseweb="input"],
+.css-1y4p8pa, .css-1xarl3l, .css-18e3th9, .css-12w0qpk {
+    background-color: rgba(0, 0, 0, 0.7);
     border-radius: 10px;
     padding: 10px;
+    margin-bottom: 5px;
 }
+
+.block-container {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 15px;
+    border-radius: 10px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -83,16 +91,4 @@ class TradeCalculator:
 # Streamlit App
 st.title('Trade Profit and Loss Calculator with Risk Management')
 
-account_balance = st.number_input('Account Balance (€)', value=10000.0)
-instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
-desired_profit = st.number_input('Desired Profit (€)', value=500.0)
-permitted_loss = st.number_input('Permitted Loss (€)', value=70.0)
-
-calculator = TradeCalculator(account_balance, instrument, desired_profit, permitted_loss)
-setup, risk_percentage = calculator.recommended_setup()
-
-st.write(f'## Recommended Trade Setup for {instrument}:')
-st.write(setup)
-
-calculator.plot_risk_pie(risk_percentage)
-calculator.plot_profit_loss(setup)
+account_balance = st.number_inpu
