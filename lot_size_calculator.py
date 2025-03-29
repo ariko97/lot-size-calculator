@@ -49,8 +49,7 @@ pip_values = {
     'US100': 1, 'US500': 1, 'XAUUSD': 10,
     'EURUSD': 10, 'GBPUSD': 10, 'USDJPY': 10, 'USDCAD': 10,
     'AUDUSD': 10, 'NZDUSD': 10,
-    'BTCUSD': 830,  # Updated to reflect 1 pip = $0.01 for BTC at price 83,000 USD
-    'ETHUSD': 10, 'SOLUSD': 1, 'DOGEUSD': 1
+    'BTCUSD': 100, 'ETHUSD': 10, 'SOLUSD': 1, 'DOGEUSD': 1
 }
 
 class TradeCalculator:
@@ -101,7 +100,7 @@ class TradeCalculator:
         st.pyplot(fig)
 
 # User Inputs
-account_balance = st.number_input('Account Balance or Daily Loss Balance (€)', value=10000.0)
+account_balance = st.number_input('Account Balance (€)', value=10000.0)
 instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
 desired_profit = st.number_input('Desired Profit (€)', value=500.0)
 permitted_loss = st.number_input('Permitted Loss (€)', value=70.0)
