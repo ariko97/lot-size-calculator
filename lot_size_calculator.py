@@ -2,6 +2,19 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
 
+# Set Streamlit background
+st.markdown(
+    """
+    <style>
+    .reportview-container {
+        background: #222222;
+        color: white;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 # Correct Pip/Point values per instrument (value per 1 lot, per point/pip move)
 pip_values = {
     'US100': 1, 'US500': 1, 'XAUUSD': 10,
@@ -40,7 +53,7 @@ class TradeCalculator:
             labels=['Risk (%)', 'Remaining Balance (%)'],
             colors=['yellow', 'black'],
             autopct='%1.1f%%',
-            pctdistance=0.85,
+            pctdistance=0.75,
             textprops=dict(color='white', fontsize=14)
         )
         for text in texts:
@@ -54,13 +67,13 @@ class TradeCalculator:
         ax.set_title('Profit vs Loss (Points/Pips)', color='white')
         ax.set_ylabel('Points/Pips', color='white')
         ax.tick_params(colors='white')
-        fig.patch.set_facecolor('#333333')
-        ax.set_facecolor('#333333')
+        fig.patch.set_facecolor('#222222')
+        ax.set_facecolor('#222222')
         st.pyplot(fig)
 
 # Streamlit App
 st.markdown('<p style="color:pink; font-size:12px;">Made by Ariko with Love</p>', unsafe_allow_html=True)
-st.title('Trade Profit and Loss Calculator with Enhanced Visuals')
+st.title('Trade Profit and Loss Calculator with Risk Management')
 
 account_balance = st.number_input('Account Balance (€)', value=10000.0)
 instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
