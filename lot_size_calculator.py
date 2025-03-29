@@ -40,8 +40,11 @@ class TradeCalculator:
             labels=['Risk (%)', 'Remaining Balance (%)'],
             colors=['yellow', 'black'],
             autopct='%1.1f%%',
-            textprops=dict(color='white', fontsize=14)
+            pctdistance=0.85,
+            textprops=dict(color='black', fontsize=14)
         )
+        for text in texts:
+            text.set_color('black')
         ax.set_title('Account Risk Ratio', color='white')
         st.pyplot(fig)
 
