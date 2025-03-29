@@ -17,22 +17,26 @@ st.markdown("""
     background-color: rgba(0, 0, 0, 0.75);
     padding: 15px;
     border-radius: 10px;
-    margin-top: 50px;  /* Pushes the block container down to avoid covering the label */
+    margin-top: 60px;  /* Pushes the block container down to avoid covering the label */
 }
 
 .top-layer {
     position: fixed;
-    top: 20px;
+    top: 0px;
     left: 50%;
-    transform: translateX(-50%);  /* Center it horizontally */
+    transform: translateX(-50%);
     color: #ffb6c1;  /* baby pink */
-    font-size: 14px;  /* Smaller font size */
+    font-size: 16px;
     font-weight: bold;
-    z-index: 99999; /* Extremely high z-index to ensure visibility */
+    z-index: 99999;
+    padding: 5px;
 }
-
 </style>
 """, unsafe_allow_html=True)
+
+# Streamlit App
+st.markdown('<div class="top-layer">Made by Ariko with Love 💖</div>', unsafe_allow_html=True)
+st.title('Trade Profit and Loss Calculator with Risk Management')
 
 # Pip/Point values per instrument
 pip_values = {
@@ -89,16 +93,14 @@ class TradeCalculator:
         fig.patch.set_alpha(0)
         st.pyplot(fig)
 
-# Streamlit App
-st.markdown('<div class="top-layer">Made by Ariko with Love 💖</div>', unsafe_allow_html=True)
-st.title('Trade Profit and Loss Calculator with Risk Management')
-
+# User Inputs
 account_balance = st.number_input('Account Balance (€)', value=10000.0)
 instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
 desired_profit = st.number_input('Desired Profit (€)', value=500.0)
 permitted_loss = st.number_input('Permitted Loss (€)', value=70.0)
 stop_loss_points = st.number_input('Desired Stop Loss (Points/Pips)', value=50.0)
 
+# Calculator
 calculator = TradeCalculator(account_balance, instrument, desired_profit, permitted_loss)
 setup, risk_percentage = calculator.recommended_setup(stop_loss_points)
 
@@ -108,4 +110,3 @@ st.write(setup)
 calculator.plot_risk_pie(risk_percentage)
 calculator.plot_profit_loss(setup)
 
-calculator.plot_profit_loss(setup)
