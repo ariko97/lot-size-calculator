@@ -1,5 +1,4 @@
 
-
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
@@ -24,7 +23,6 @@ class TradeCalculator:
         return abs(self.permitted_loss / (stop_loss_points * self.pip_value))
 
     def recommended_setup(self):
-        # Suggesting realistic stop loss (points/pips)
         stop_loss_points = st.number_input('Enter Desired Stop Loss (Points/Pips)', value=50.0)
         lot_size = self.calculate_lot_size(stop_loss_points)
         profit_target_points = (self.desired_profit / self.permitted_loss) * stop_loss_points
@@ -34,17 +32,23 @@ class TradeCalculator:
             'Metric': ['Recommended Lot Size', 'Profit Target (Points/Pips)', 'Stop Loss (Points/Pips)', 'Risk Percentage (%)'],
             'Value': [round(lot_size, 2), round(profit_target_points, 2), round(stop_loss_points, 2), round(risk_percentage, 2)]
         })
-        return setup
+        return setup, risk_percentage
 
-    def plot_trade_setup(self, setup):
-        fig, ax = plt.subplots(figsize=(8, 5))
-        ax.bar(setup['Metric'], setup['Value'], color=['purple', 'green', 'red', 'blue'])
-        ax.set_title(f'Trade Setup for {self.instrument}')
-        ax.set_ylabel('Values')
+    def plot_risk_pie(self, risk_percentage):
+        fig, ax = plt.subplots(figsize=(6, 6))
+        ax.pie([risk_percentage, 100 - risk_percentage], labels=['Risk (%)', 'Remaining Balance (%)'], colors=['red', 'green'], autopct='%1.1f%%')
+        ax.set_title('Account Risk Ratio')
+        st.pyplot(fig)
+
+    def plot_profit_loss(self, setup):
+        fig, ax = plt.subplots(figsize=(6, 4))
+        ax.bar(['Profit Target', 'Stop Loss'], [setup.loc[1, 'Value'], setup.loc[2, 'Value']], color=['green', 'red'])
+        ax.set_title('Profit vs Loss (Points/Pips)')
+        ax.set_ylabel('Points/Pips')
         st.pyplot(fig)
 
 # Streamlit App
-st.title('Trade Profit and Loss Calculator with Realistic Risk Management')
+st.title('Trade Profit and Loss Calculator with Enhanced Visuals')
 
 account_balance = st.number_input('Account Balance (€)', value=10000.0)
 instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
@@ -52,9 +56,13 @@ desired_profit = st.number_input('Desired Profit (€)', value=500.0)
 permitted_loss = st.number_input('Permitted Loss (€)', value=70.0)
 
 calculator = TradeCalculator(account_balance, instrument, desired_profit, permitted_loss)
-setup = calculator.recommended_setup()
+setup, risk_percentage = calculator.recommended_setup()
 
 st.write(f'## Recommended Trade Setup for {instrument}:')
 st.write(setup)
 
-calculator.plot_trade_setup(setup)
+st.write('### Account Risk Ratio')
+calculator.plot_risk_pie(risk_percentage)
+
+st.write('### Profit vs Loss')
+calculator.plot_profit_loss(setup)
