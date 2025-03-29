@@ -1,7 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import streamlit as st
-import requests
 
 # Custom background and styling
 st.markdown('''
@@ -39,33 +38,27 @@ st.markdown('''
 </style>
 ''', unsafe_allow_html=True)
 
-# Function to fetch current price from CoinGecko
-@st.cache_data
+# Displaying the "Made by Ariko with Love 💖" text at the top center above the title
+st.markdown('<div class="top-layer">Made by Ariko with Love 💖</div>', unsafe_allow_html=True)
 
-def get_crypto_price(crypto):
-    url = f'https://api.coingecko.com/api/v3/simple/price?ids={crypto}&vs_currencies=usd'
-    try:
-        response = requests.get(url).json()
-        return response[crypto]['usd']
-    except:
-        return None
+# Title of the tool
+st.title('Trade Profit and Loss Calculator with Risk Management')
 
 # Pip/Point values per instrument
 pip_values = {
     'US100': 1, 'US500': 1, 'XAUUSD': 10,
     'EURUSD': 10, 'GBPUSD': 10, 'USDJPY': 10, 'USDCAD': 10,
-    'AUDUSD': 10, 'NZDUSD': 10
+    'AUDUSD': 10, 'NZDUSD': 10,
+    'BTCUSD': 1, 'ETHUSD': 1, 'SOLUSD': 1, 'DOGEUSD': 1
 }
 
-crypto_assets = ['bitcoin', 'ethereum', 'solana', 'dogecoin']
-
 class TradeCalculator:
-    def __init__(self, account_balance, instrument, desired_profit, permitted_loss, pip_value):
+    def __init__(self, account_balance, instrument, desired_profit, permitted_loss):
         self.account_balance = account_balance
         self.instrument = instrument
         self.desired_profit = desired_profit
         self.permitted_loss = permitted_loss
-        self.pip_value = pip_value
+        self.pip_value = pip_values[instrument]
 
     def calculate_lot_size(self, stop_loss_points):
         return abs(self.permitted_loss / (stop_loss_points * self.pip_value))
@@ -91,6 +84,10 @@ class TradeCalculator:
             pctdistance=0.75,
             textprops=dict(color='white', fontsize=14)
         )
+        for text in texts:
+            text.set_color('white')
+        ax.set_title('Account Risk Ratio', color='white')
+        fig.patch.set_alpha(0)
         st.pyplot(fig)
 
     def plot_profit_loss(self, setup):
@@ -98,37 +95,27 @@ class TradeCalculator:
         ax.bar(['Profit Target', 'Stop Loss'], [setup.loc[1, 'Value'], setup.loc[2, 'Value']], color=['#FFD700', '#444444'])
         ax.set_title('Profit vs Loss (Points/Pips)', color='white')
         ax.set_ylabel('Points/Pips', color='white')
+        ax.tick_params(colors='white')
+        fig.patch.set_alpha(0)
         st.pyplot(fig)
 
+# User Inputs
 account_balance = st.number_input('Account Balance or Daily Loss Balance (€)', value=10000.0)
-instrument = st.selectbox('Select Instrument', list(pip_values.keys()) + crypto_assets)
+instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
 desired_profit = st.number_input('Desired Profit (€)', value=500.0)
 permitted_loss = st.number_input('Permitted Loss (€)', value=70.0)
 stop_loss_points = st.number_input('Desired Stop Loss (Points/Pips)', value=50.0)
 
-# Fetch pip value based on instrument
-if instrument in pip_values:
-    pip_value = pip_values[instrument]
-elif instrument == 'bitcoin':
-    pip_value = get_crypto_price('bitcoin')
-elif instrument == 'ethereum':
-    pip_value = get_crypto_price('ethereum')
-elif instrument == 'solana':
-    sol_price = get_crypto_price('solana')
-    pip_value = sol_price / 1000 if sol_price else 1  # 1 pip = 0.001
-elif instrument == 'dogecoin':
-    doge_price = get_crypto_price('dogecoin')
-    pip_value = doge_price / 10000 if doge_price else 1  # 1 pip = 0.0001
+# Calculator
+calculator = TradeCalculator(account_balance, instrument, desired_profit, permitted_loss)
+setup, risk_percentage = calculator.recommended_setup(stop_loss_points)
 
-if pip_value:
-    calculator = TradeCalculator(account_balance, instrument, desired_profit, permitted_loss, pip_value)
-    setup, risk_percentage = calculator.recommended_setup(stop_loss_points)
+st.write(f'## Recommended Trade Setup for {instrument}:')
+st.write(setup)
 
-    st.write(f'## Recommended Trade Setup for {instrument}:')
-    st.write(setup)
+calculator.plot_risk_pie(risk_percentage)
+calculator.plot_profit_loss(setup)
 
-    calculator.plot_risk_pie(risk_percentage)
-    calculator.plot_profit_loss(setup)
+# Adding dead space at the bottom to avoid Streamlit banner overlap
+st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
 
-else:
-    st.write('Unable to fetch the pip value. Please try again later.')
