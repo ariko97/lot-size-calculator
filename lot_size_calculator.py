@@ -38,18 +38,22 @@ st.markdown('''
 </style>
 ''', unsafe_allow_html=True)
 
-# Displaying the "Made by Ariko with Love 💖" text at the top center above the title
-st.markdown('<div class="top-layer">Made by Ariko with Love 💖</div>', unsafe_allow_html=True)
+import requests
 
-# Title of the tool
-st.title('Trade Profit and Loss Calculator with Risk Management')
+def get_crypto_price(crypto):
+    url = f'https://api.coingecko.com/api/v3/simple/price?ids={crypto}&vs_currencies=usd'
+    response = requests.get(url).json()
+    return response[crypto]['usd']
 
 # Pip/Point values per instrument
 pip_values = {
     'US100': 1, 'US500': 1, 'XAUUSD': 10,
     'EURUSD': 10, 'GBPUSD': 10, 'USDJPY': 10, 'USDCAD': 10,
     'AUDUSD': 10, 'NZDUSD': 10,
-    'BTCUSD': 1, 'ETHUSD': 1, 'SOLUSD': 1, 'DOGEUSD': 1
+    'BTCUSD': get_crypto_price('bitcoin'),
+    'ETHUSD': get_crypto_price('ethereum'),
+    'SOLUSD': get_crypto_price('solana') / 1000,  # 1 pip = 0.001
+    'DOGEUSD': get_crypto_price('dogecoin') / 10000  # 1 pip = 0.0001
 }
 
 class TradeCalculator:
@@ -74,31 +78,6 @@ class TradeCalculator:
         })
         return setup, risk_percentage
 
-    def plot_risk_pie(self, risk_percentage):
-        fig, ax = plt.subplots(figsize=(6, 6))
-        wedges, texts, autotexts = ax.pie(
-            [risk_percentage, 100 - risk_percentage],
-            labels=['Risk (%)', 'Remaining Balance (%)'],
-            colors=['#FFD700', '#444444'],
-            autopct='%1.1f%%',
-            pctdistance=0.75,
-            textprops=dict(color='white', fontsize=14)
-        )
-        for text in texts:
-            text.set_color('white')
-        ax.set_title('Account Risk Ratio', color='white')
-        fig.patch.set_alpha(0)
-        st.pyplot(fig)
-
-    def plot_profit_loss(self, setup):
-        fig, ax = plt.subplots(figsize=(6, 4))
-        ax.bar(['Profit Target', 'Stop Loss'], [setup.loc[1, 'Value'], setup.loc[2, 'Value']], color=['#FFD700', '#444444'])
-        ax.set_title('Profit vs Loss (Points/Pips)', color='white')
-        ax.set_ylabel('Points/Pips', color='white')
-        ax.tick_params(colors='white')
-        fig.patch.set_alpha(0)
-        st.pyplot(fig)
-
 # User Inputs
 account_balance = st.number_input('Account Balance or Daily Loss Balance (€)', value=10000.0)
 instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
@@ -112,9 +91,3 @@ setup, risk_percentage = calculator.recommended_setup(stop_loss_points)
 
 st.write(f'## Recommended Trade Setup for {instrument}:')
 st.write(setup)
-
-calculator.plot_risk_pie(risk_percentage)
-calculator.plot_profit_loss(setup)
-
-# Adding dead space at the bottom to avoid Streamlit banner overlap
-st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
