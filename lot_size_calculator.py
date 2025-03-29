@@ -22,10 +22,11 @@ st.markdown("""
 
 .top-layer {
     position: fixed;
-    top: 10px;
-    left: 20px;
+    top: 40px;
+    left: 50%;
+    transform: translateX(-50%);  /* Center it horizontally */
     color: #ffb6c1;  /* baby pink */
-    font-size: 16px;
+    font-size: 20px;
     font-weight: bold;
     z-index: 99999; /* Extremely high z-index to ensure visibility */
     background-color: rgba(0, 0, 0, 0.5);
