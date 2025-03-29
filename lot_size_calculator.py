@@ -12,10 +12,13 @@ st.markdown("""
     background-attachment: fixed;
     color: #FFFFFF;
 }
-.css-1y4p8pa, .css-1xarl3l, .css-18e3th9, .css-12w0qpk, .stSelectbox, .stNumberInput {
+.css-1y4p8pa, .css-1xarl3l, .css-18e3th9, .css-12w0qpk, .stSelectbox, .stNumberInput, .stSelectbox div[data-baseweb="select"], .stNumberInput div[data-baseweb="input"] {
     background-color: rgba(0, 0, 0, 0.7);
     border-radius: 10px;
     padding: 10px;
+}
+.css-1siy2j7 {
+    background-color: rgba(0, 0, 0, 0.7);
 }
 </style>
 """, unsafe_allow_html=True)
