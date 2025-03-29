@@ -51,8 +51,7 @@ class TradeCalculator:
     def calculate_lot_size(self, stop_loss_points):
         return abs(self.permitted_loss / (stop_loss_points * self.pip_value))
 
-    def recommended_setup(self):
-        stop_loss_points = st.number_input('Desired Stop Loss (Points/Pips)', value=50.0)
+    def recommended_setup(self, stop_loss_points):
         lot_size = self.calculate_lot_size(stop_loss_points)
         profit_target_points = (self.desired_profit / self.permitted_loss) * stop_loss_points
         risk_percentage = (self.permitted_loss / self.account_balance) * 100
@@ -91,4 +90,17 @@ class TradeCalculator:
 # Streamlit App
 st.title('Trade Profit and Loss Calculator with Risk Management')
 
-account_balance = st.number_inpu
+account_balance = st.number_input('Account Balance (€)', value=10000.0)
+instrument = st.selectbox('Select Instrument', list(pip_values.keys()))
+desired_profit = st.number_input('Desired Profit (€)', value=500.0)
+permitted_loss = st.number_input('Permitted Loss (€)', value=70.0)
+stop_loss_points = st.number_input('Desired Stop Loss (Points/Pips)', value=50.0)
+
+calculator = TradeCalculator(account_balance, instrument, desired_profit, permitted_loss)
+setup, risk_percentage = calculator.recommended_setup(stop_loss_points)
+
+st.write(f'## Recommended Trade Setup for {instrument}:')
+st.write(setup)
+
+calculator.plot_risk_pie(risk_percentage)
+calculator.plot_profit_loss(setup)
