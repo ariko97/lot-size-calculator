@@ -23,14 +23,14 @@ st.markdown("""
 .top-layer {
     position: fixed;
     top: 10px;
-    right: 10px;
-    color: pink;
-    font-size: 14px;
+    left: 20px;
+    color: #ffb6c1;  /* baby pink */
+    font-size: 16px;
     font-weight: bold;
     z-index: 99999; /* Extremely high z-index to ensure visibility */
-    background-color: rgba(0, 0, 0, 0.6);
-    padding: 5px 10px;
-    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 8px 12px;
+    border-radius: 10px;
 }
 
 </style>
