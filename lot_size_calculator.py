@@ -79,35 +79,36 @@ PIP_VALUES = {
 }
 
 def calculate_lot_size(account_balance, voluntary_loss, pip_value, stop_loss_pips, desired_profit, volatility_factor):
-    adjusted_stop_loss_pips = stop_loss_pips / volatility_factor  # Adjusted Stop Loss based on slider position
+    adjusted_stop_loss_pips = stop_loss_pips * volatility_factor  # Adjusted Stop Loss: High Volatility = Bigger Stop Loss = Smaller Lots
     take_profit_pips = desired_profit / pip_value
 
-    # Standard Lot Size Calculation (Not scaled by account balance)
+    # Standard Lot Size Calculation (Scaled by stop loss)
     lot_size = voluntary_loss / (adjusted_stop_loss_pips * pip_value)
     risk_percentage = (voluntary_loss / account_balance) * 100
 
     setup = pd.DataFrame({
         'Metric': ['Recommended Lot Size', 'Risk (%)', 'Take Profit Pips', 'Stop Loss Pips'],
-        'Value': [round(lot_size, 2), round(risk_percentage, 2), round(take_profit_pips, 2), round(stop_loss_pips, 2)]
+        'Value': [round(lot_size, 2), round(risk_percentage, 2), round(take_profit_pips, 2), round(adjusted_stop_loss_pips, 2)]
     })
     return setup, adjusted_stop_loss_pips, risk_percentage
 
 st.title('📊 Trade Profit and Loss with Risk Management')
 
-# User Inputs
+# ✅ Reordered Inputs - Instrument Selection First
+instrument = st.selectbox('Select Instrument', list(AMR_VALUES.keys()))
 account_balance = st.number_input('Total Account Balance ($)', value=10000.0)
 voluntary_loss = st.number_input('Voluntary Loss ($)', value=600.0)
 desired_profit = st.number_input('Desired Profit ($)', value=500.0)
-instrument = st.selectbox('Select Instrument', list(AMR_VALUES.keys()))
 stop_loss_pips = st.number_input('Stop Loss Pips', value=50.0)
 
-# Improved Volatility Slider
+# ✅ Improved Volatility Slider (High Volatility = Smaller Lots)
 volatility_factor = st.slider(
-    label="Less Volatile Market (Smaller Lots) ➔ Highly Volatile Market (Bigger Lots)",
+    label="Volatility Adjustment (Low Volatility ➔ High Volatility)",
     min_value=0.5,
     max_value=2.0,
     value=1.0,
-    step=0.1
+    step=0.1,
+    help="Slide right for smaller lots and lower risk, slide left for larger lots and higher risk."
 )
 
 AMR = AMR_VALUES[instrument]
