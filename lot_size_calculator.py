@@ -78,13 +78,12 @@ PIP_VALUES = {
     'US30': 1
 }
 
-def calculate_lot_size(account_balance, voluntary_loss, pip_value, stop_loss_pips, desired_profit, volatility_factor):
-    adjusted_stop_loss_pips = stop_loss_pips * volatility_factor  # Adjusted Stop Loss: High Volatility = Bigger Stop Loss = Smaller Lots
+def calculate_lot_size(account_balance, daily_permitted_loss, voluntary_loss, pip_value, stop_loss_pips, desired_profit, volatility_factor):
+    adjusted_stop_loss_pips = stop_loss_pips * volatility_factor  # Adjusted Stop Loss for Volatility
     take_profit_pips = desired_profit / pip_value
 
-    # Standard Lot Size Calculation (Scaled by stop loss)
     lot_size = voluntary_loss / (adjusted_stop_loss_pips * pip_value)
-    risk_percentage = (voluntary_loss / account_balance) * 100
+    risk_percentage = (voluntary_loss / daily_permitted_loss) * 100
 
     setup = pd.DataFrame({
         'Metric': ['Recommended Lot Size', 'Risk (%)', 'Take Profit Pips', 'Stop Loss Pips'],
@@ -94,48 +93,40 @@ def calculate_lot_size(account_balance, voluntary_loss, pip_value, stop_loss_pip
 
 st.title('📊 Trade Profit and Loss with Risk Management')
 
-# ✅ Reordered Inputs - Instrument Selection First
+# Select Account Type
+account_type = st.selectbox("Select Account Type", ["Prop Firm Account", "Personal Account"])
+
+# Account Balance
+account_balance = st.number_input('Total Account Balance ($)', value=50000.0 if account_type == "Prop Firm Account" else 10000.0)
+
+# Permitted Daily Loss
+daily_permitted_loss = st.number_input(
+    'Permitted Daily Loss ($)', value=500.0 if account_type == "Prop Firm Account" else 1000.0
+)
+
+# Select Instrument
 instrument = st.selectbox('Select Instrument', list(AMR_VALUES.keys()))
-account_balance = st.number_input('Total Account Balance ($)', value=10000.0)
-voluntary_loss = st.number_input('Voluntary Loss ($)', value=600.0)
+
+# Inputs
+voluntary_loss = st.number_input('Voluntary Loss for This Trade ($)', value=100.0)
 desired_profit = st.number_input('Desired Profit ($)', value=500.0)
 stop_loss_pips = st.number_input('Stop Loss Pips', value=50.0)
 
-# ✅ Improved Volatility Slider (High Volatility = Smaller Lots)
+# Market Volatility Adjustment
 volatility_factor = st.slider(
-    label="Volatility Adjustment (Low Volatility ➔ High Volatility)",
+    label="Market Conditions (Low Volatility ➔ High Volatility)",
     min_value=0.5,
     max_value=2.0,
     value=1.0,
-    step=0.1,
-    help="Slide right for smaller lots and lower risk, slide left for larger lots and higher risk."
+    step=0.1
 )
 
 AMR = AMR_VALUES[instrument]
 pip_value = PIP_VALUES[instrument]
 
 setup, adjusted_stop_loss_pips, risk_percentage = calculate_lot_size(
-    account_balance, voluntary_loss, pip_value, stop_loss_pips, desired_profit, volatility_factor
+    account_balance, daily_permitted_loss, voluntary_loss, pip_value, stop_loss_pips, desired_profit, volatility_factor
 )
 
 st.write(f'## Recommended Trade Setup for {instrument}:')
 st.write(setup)
-
-def plot_risk_pie(risk_percentage):
-    fig, ax = plt.subplots(figsize=(6, 6))
-    wedges, texts, autotexts = ax.pie(
-        [risk_percentage, 100 - risk_percentage],
-        labels=['Risked Amount (%)', 'Remaining Balance (%)'],
-        colors=['#FFD700', '#444444'],
-        autopct='%1.1f%%',
-        pctdistance=0.75,
-        textprops=dict(color='white', fontsize=14)
-    )
-    for text in texts:
-        text.set_color('white')
-    ax.set_title('Risk Representation', color='white')
-    fig.patch.set_alpha(0)
-    st.pyplot(fig)
-
-plot_risk_pie(risk_percentage)
-st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
