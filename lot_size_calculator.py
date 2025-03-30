@@ -107,18 +107,18 @@ if risk_choice == "Risk Permitted Daily Loss":
 else:
     permitted_daily_loss = account_balance  # Using the full account balance as risk
 
-# Voluntary Loss Input (Always Required)
 voluntary_loss = st.number_input('Voluntary Loss ($)', value=100.0)
 desired_profit = st.number_input('Desired Profit ($)', value=500.0)
 instrument = st.selectbox('Select Instrument', list(AMR_VALUES.keys()))
 
-# Market Volatility Conditions Slider
+# Improved Volatility Slider with Description
 volatility_factor = st.slider(
-    "Market Volatility Conditions (Drag to Adjust)",
+    "Volatility Risk Adjustment (Higher Risk ⬅️ ➡️ Lower Risk)",
     min_value=0.5,
     max_value=2.0,
     value=1.0,
-    step=0.1
+    step=0.1,
+    help="0.5 = High Risk (Larger Lots, Smaller Stop Loss)\n1.0 = Medium Risk (Balanced)\n2.0 = Low Risk (Smaller Lots, Bigger Stop Loss)"
 )
 
 AMR = AMR_VALUES[instrument]
@@ -129,7 +129,6 @@ setup, stop_loss_pips, risk_percentage = calculate_volatility_adjusted_setup(acc
 st.write(f'## Recommended Trade Setup for {instrument}:')
 st.write(setup)
 
-# Plotting risk pie chart
 def plot_risk_pie(risk_percentage):
     fig, ax = plt.subplots(figsize=(6, 6))
     wedges, texts, autotexts = ax.pie(
@@ -143,4 +142,8 @@ def plot_risk_pie(risk_percentage):
     for text in texts:
         text.set_color('white')
     ax.set_title('Risk Representation', color='white')
-    fig.patch.set
+    fig.patch.set_alpha(0)
+    st.pyplot(fig)
+
+plot_risk_pie(risk_percentage)
+st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
