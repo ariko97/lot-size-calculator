@@ -79,15 +79,15 @@ PIP_VALUES = {
 }
 
 def calculate_volatility_adjusted_setup(account_balance, voluntary_loss, pip_value, AMR, desired_profit, volatility_factor=1.0):
-    ADR = AMR / 20  
-    stop_loss_pips = ADR * volatility_factor
+    ADR = AMR / 20  # Average Daily Range
+    stop_loss_pips = ADR / volatility_factor  # Make sure sliding right increases lot size
     take_profit_pips = (desired_profit / pip_value)
     lot_size = voluntary_loss / (stop_loss_pips * pip_value)
     risk_percentage = (voluntary_loss / account_balance) * 100
 
     setup = pd.DataFrame({
-        'Metric': ['Average Daily Range (Pips)', 'Volatility Adjusted Stop Loss (Pips)', 'Take Profit Pips', 'Recommended Lot Size', 'Risk (%)'],
-        'Value': [round(ADR, 2), round(stop_loss_pips, 2), round(take_profit_pips, 2), round(lot_size, 2), round(risk_percentage, 2)]
+        'Metric': ['Recommended Lot Size', 'Risk (%)', 'Take Profit Pips', 'Stop Loss Pips'],
+        'Value': [round(lot_size, 2), round(risk_percentage, 2), round(take_profit_pips, 2), round(stop_loss_pips, 2)]
     })
     return setup, stop_loss_pips, risk_percentage
 
@@ -111,10 +111,10 @@ voluntary_loss = st.number_input('Voluntary Loss ($)', value=100.0)
 desired_profit = st.number_input('Desired Profit ($)', value=500.0)
 instrument = st.selectbox('Select Instrument', list(AMR_VALUES.keys()))
 
-# Improved Volatility Slider with Descriptive Labels
+# Improved Volatility Slider - Reversed Calculation
 st.write("### Market Volatility Conditions")
 volatility_factor = st.slider(
-    label="Less Volatile Market (Left) ➔ Moderate Volatile ➔ Highly Volatile Market (Right)",
+    label="Less Volatile Market (Smaller Lots) ➔ Highly Volatile Market (Bigger Lots)",
     min_value=0.5,
     max_value=2.0,
     value=1.0,
