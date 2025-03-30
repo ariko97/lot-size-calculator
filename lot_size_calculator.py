@@ -93,7 +93,7 @@ def calculate_volatility_adjusted_setup(account_balance, permitted_loss, pip_val
 st.title('🌟 Enhanced Volatility-Adjusted Trade Calculator')
 
 # User Inputs
-account_balance = st.number_input('Total Account Balance (€)', value=10000.0)
+account_balance = st.number_input('Total Account Balance ($)', value=10000.0)
 risk_choice = st.radio(
     "Select Risk Type",
     ("Risk Full Account Balance", "Risk Permitted Daily Loss"),
@@ -101,13 +101,11 @@ risk_choice = st.radio(
 )
 
 if risk_choice == "Risk Permitted Daily Loss":
-    permitted_daily_loss_percentage = st.number_input('Permitted Daily Loss (%)', value=1.0)
-    permitted_loss = (permitted_daily_loss_percentage / 100) * account_balance
+    permitted_loss = st.number_input('Permitted Daily Loss ($)', value=100.0)
 else:
     permitted_loss = account_balance  # Using the full account balance as risk
 
 desired_profit = st.number_input('Desired Profit ($)', value=500.0)
-voluntary_loss = st.number_input('Voluntary Loss Taken ($)', value=70.0)
 instrument = st.selectbox('Select Instrument', list(AMR_VALUES.keys()))
 
 # Market Volatility Conditions Slider
@@ -122,7 +120,7 @@ volatility_factor = st.slider(
 AMR = AMR_VALUES[instrument]
 pip_value = PIP_VALUES[instrument]
 
-setup, stop_loss_pips = calculate_volatility_adjusted_setup(account_balance, voluntary_loss, pip_value, AMR, desired_profit, volatility_factor)
+setup, stop_loss_pips = calculate_volatility_adjusted_setup(account_balance, permitted_loss, pip_value, AMR, desired_profit, volatility_factor)
 
 st.write(f'## Recommended Trade Setup for {instrument}:')
 st.write(setup)
