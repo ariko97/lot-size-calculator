@@ -78,12 +78,12 @@ PIP_VALUES = {
     'US30': 1
 }
 
-def calculate_volatility_adjusted_setup(account_balance, voluntary_loss, pip_value, AMR, desired_profit, volatility_factor=1.0):
+def calculate_lot_size(account_balance, voluntary_loss, pip_value, AMR, desired_profit, volatility_factor, risk_multiplier):
     ADR = AMR / 20  # Average Daily Range
-    stop_loss_pips = ADR / volatility_factor  # Adjusted Stop Loss Pips based on Volatility Factor
+    stop_loss_pips = ADR / (volatility_factor * risk_multiplier)  # Adjusted Stop Loss Pips
     take_profit_pips = desired_profit / pip_value
 
-    # Adjusted lot size calculation considering account balance scaling
+    # Scaled lot size calculation
     lot_size = (voluntary_loss / (stop_loss_pips * pip_value)) * (account_balance / 1000)
     risk_percentage = (voluntary_loss / account_balance) * 100
 
@@ -97,56 +97,35 @@ st.title('📊 Trade Profit and Loss with Risk Management')
 
 # User Inputs
 account_balance = st.number_input('Total Account Balance ($)', value=10000.0)
-
-risk_choice = st.radio(
-    "Select Risk Type",
-    ("Risk Full Account Balance", "Risk Permitted Daily Loss"),
-    index=1
-)
-
-if risk_choice == "Risk Permitted Daily Loss":
-    permitted_daily_loss = st.number_input('Permitted Daily Loss ($)', value=100.0)
-else:
-    permitted_daily_loss = account_balance  # Using the full account balance as risk
-
-voluntary_loss = st.number_input('Voluntary Loss ($)', value=100.0)
+voluntary_loss = st.number_input('Voluntary Loss ($)', value=600.0)
 desired_profit = st.number_input('Desired Profit ($)', value=500.0)
 instrument = st.selectbox('Select Instrument', list(AMR_VALUES.keys()))
 
-# Improved Volatility Slider - Reversed Calculation
-st.write("### Market Volatility Conditions")
+# Trade Type Selector
+trade_type = st.selectbox(
+    "Select Trade Type",
+    ("Scalping", "Day Trading", "Swing Trading")
+)
+
+# Risk Multiplier Based on Trade Type
+risk_multipliers = {"Scalping": 2.0, "Day Trading": 1.0, "Swing Trading": 0.5}
+risk_multiplier = risk_multipliers[trade_type]
+
+# Improved Volatility Slider
 volatility_factor = st.slider(
-    label="Less Volatile Market (Smaller Lots) ➔ Highly Volatile Market (Bigger Lots)",
+    label="Less Volatile Market (Left) ➔ Highly Volatile Market (Right)",
     min_value=0.5,
     max_value=2.0,
     value=1.0,
-    step=0.1,
-    help="Slide right for larger lots and higher risk, slide left for smaller lots and lower risk."
+    step=0.1
 )
 
 AMR = AMR_VALUES[instrument]
 pip_value = PIP_VALUES[instrument]
 
-setup, stop_loss_pips, risk_percentage = calculate_volatility_adjusted_setup(account_balance, voluntary_loss, pip_value, AMR, desired_profit, volatility_factor)
+setup, stop_loss_pips, risk_percentage = calculate_lot_size(
+    account_balance, voluntary_loss, pip_value, AMR, desired_profit, volatility_factor, risk_multiplier
+)
 
 st.write(f'## Recommended Trade Setup for {instrument}:')
 st.write(setup)
-
-def plot_risk_pie(risk_percentage):
-    fig, ax = plt.subplots(figsize=(6, 6))
-    wedges, texts, autotexts = ax.pie(
-        [risk_percentage, 100 - risk_percentage],
-        labels=['Risked Amount (%)', 'Remaining Balance (%)'],
-        colors=['#FFD700', '#444444'],
-        autopct='%1.1f%%',
-        pctdistance=0.75,
-        textprops=dict(color='white', fontsize=14)
-    )
-    for text in texts:
-        text.set_color('white')
-    ax.set_title('Risk Representation', color='white')
-    fig.patch.set_alpha(0)
-    st.pyplot(fig)
-
-plot_risk_pie(risk_percentage)
-st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
