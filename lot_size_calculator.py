@@ -78,32 +78,33 @@ PIP_VALUES = {
     'US30': 1
 }
 
-def calculate_volatility_adjusted_setup(account_balance, permitted_loss, pip_value, AMR, desired_profit, volatility_factor=1.0):
+def calculate_volatility_adjusted_setup(account_balance, voluntary_loss, pip_value, AMR, desired_profit, volatility_factor=1.0):
     ADR = AMR / 20  
     stop_loss_pips = ADR * volatility_factor
     take_profit_pips = (desired_profit / pip_value)
-    lot_size = permitted_loss / (stop_loss_pips * pip_value)
+    lot_size = voluntary_loss / (stop_loss_pips * pip_value)
+    risk_percentage = (voluntary_loss / account_balance) * 100
 
     setup = pd.DataFrame({
-        'Metric': ['Average Daily Range (Pips)', 'Volatility Adjusted Stop Loss (Pips)', 'Take Profit Pips', 'Recommended Lot Size'],
-        'Value': [round(ADR, 2), round(stop_loss_pips, 2), round(take_profit_pips, 2), round(lot_size, 2)]
+        'Metric': ['Average Daily Range (Pips)', 'Volatility Adjusted Stop Loss (Pips)', 'Take Profit Pips', 'Recommended Lot Size', 'Risk (%)'],
+        'Value': [round(ADR, 2), round(stop_loss_pips, 2), round(take_profit_pips, 2), round(lot_size, 2), round(risk_percentage, 2)]
     })
-    return setup, stop_loss_pips
+    return setup, stop_loss_pips, risk_percentage
 
-st.title('🌟 Enhanced Volatility-Adjusted Trade Calculator')
+st.title('📊 Trade Profit and Loss with Risk Management')
 
 # User Inputs
 account_balance = st.number_input('Total Account Balance ($)', value=10000.0)
 risk_choice = st.radio(
     "Select Risk Type",
-    ("Risk Full Account Balance", "Risk Permitted Daily Loss"),
+    ("Risk Full Account Balance", "Voluntary Loss"),
     index=1
 )
 
-if risk_choice == "Risk Permitted Daily Loss":
-    permitted_loss = st.number_input('Permitted Daily Loss ($)', value=100.0)
+if risk_choice == "Voluntary Loss":
+    voluntary_loss = st.number_input('Voluntary Loss ($)', value=100.0)
 else:
-    permitted_loss = account_balance  # Using the full account balance as risk
+    voluntary_loss = account_balance  # Using the full account balance as risk
 
 desired_profit = st.number_input('Desired Profit ($)', value=500.0)
 instrument = st.selectbox('Select Instrument', list(AMR_VALUES.keys()))
@@ -120,10 +121,29 @@ volatility_factor = st.slider(
 AMR = AMR_VALUES[instrument]
 pip_value = PIP_VALUES[instrument]
 
-setup, stop_loss_pips = calculate_volatility_adjusted_setup(account_balance, permitted_loss, pip_value, AMR, desired_profit, volatility_factor)
+setup, stop_loss_pips, risk_percentage = calculate_volatility_adjusted_setup(account_balance, voluntary_loss, pip_value, AMR, desired_profit, volatility_factor)
 
 st.write(f'## Recommended Trade Setup for {instrument}:')
 st.write(setup)
+
+# Plotting risk pie chart
+def plot_risk_pie(risk_percentage):
+    fig, ax = plt.subplots(figsize=(6, 6))
+    wedges, texts, autotexts = ax.pie(
+        [risk_percentage, 100 - risk_percentage],
+        labels=['Risked Amount (%)', 'Remaining Balance (%)'],
+        colors=['#FFD700', '#444444'],
+        autopct='%1.1f%%',
+        pctdistance=0.75,
+        textprops=dict(color='white', fontsize=14)
+    )
+    for text in texts:
+        text.set_color('white')
+    ax.set_title('Risk Representation', color='white')
+    fig.patch.set_alpha(0)
+    st.pyplot(fig)
+
+plot_risk_pie(risk_percentage)
 
 # Adding dead space at the bottom to avoid Streamlit banner overlap
 st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
