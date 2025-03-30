@@ -111,14 +111,15 @@ voluntary_loss = st.number_input('Voluntary Loss ($)', value=100.0)
 desired_profit = st.number_input('Desired Profit ($)', value=500.0)
 instrument = st.selectbox('Select Instrument', list(AMR_VALUES.keys()))
 
-# Improved Volatility Slider with Description
+# Improved Volatility Slider with Descriptive Labels
+st.write("### Market Volatility Conditions")
 volatility_factor = st.slider(
-    "Volatility Risk Adjustment (Higher Risk ⬅️ ➡️ Lower Risk)",
+    label="Less Volatile Market (Left) ➔ Moderate Volatile ➔ Highly Volatile Market (Right)",
     min_value=0.5,
     max_value=2.0,
     value=1.0,
     step=0.1,
-    help="0.5 = High Risk (Larger Lots, Smaller Stop Loss)\n1.0 = Medium Risk (Balanced)\n2.0 = Low Risk (Smaller Lots, Bigger Stop Loss)"
+    help="Slide right for larger lots and higher risk, slide left for smaller lots and lower risk."
 )
 
 AMR = AMR_VALUES[instrument]
