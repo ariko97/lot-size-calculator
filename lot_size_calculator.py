@@ -95,17 +95,20 @@ st.title('📊 Trade Profit and Loss with Risk Management')
 
 # User Inputs
 account_balance = st.number_input('Total Account Balance ($)', value=10000.0)
+
 risk_choice = st.radio(
     "Select Risk Type",
-    ("Risk Full Account Balance", "Voluntary Loss"),
+    ("Risk Full Account Balance", "Risk Permitted Daily Loss"),
     index=1
 )
 
-if risk_choice == "Voluntary Loss":
-    voluntary_loss = st.number_input('Voluntary Loss ($)', value=100.0)
+if risk_choice == "Risk Permitted Daily Loss":
+    permitted_daily_loss = st.number_input('Permitted Daily Loss ($)', value=100.0)
 else:
-    voluntary_loss = account_balance  # Using the full account balance as risk
+    permitted_daily_loss = account_balance  # Using the full account balance as risk
 
+# Voluntary Loss Input (Always Required)
+voluntary_loss = st.number_input('Voluntary Loss ($)', value=100.0)
 desired_profit = st.number_input('Desired Profit ($)', value=500.0)
 instrument = st.selectbox('Select Instrument', list(AMR_VALUES.keys()))
 
@@ -140,10 +143,4 @@ def plot_risk_pie(risk_percentage):
     for text in texts:
         text.set_color('white')
     ax.set_title('Risk Representation', color='white')
-    fig.patch.set_alpha(0)
-    st.pyplot(fig)
-
-plot_risk_pie(risk_percentage)
-
-# Adding dead space at the bottom to avoid Streamlit banner overlap
-st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
+    fig.patch.set
