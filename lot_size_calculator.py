@@ -39,17 +39,12 @@ st.markdown('''
         color: #FFD700;
     }
 
-    .stSlider label {
-        color: #FFD700;
-    }
-
-    .stNumberInput label {
+    .stSlider label, .stNumberInput label, .stSelectbox label {
         color: #FFD700;
     }
     </style>
 ''', unsafe_allow_html=True)
 
-# Displaying the "Made by Ariko with Love 💖" text at the top center above the title
 st.markdown('<div class="top-layer">Made by Ariko with Love 💖</div>', unsafe_allow_html=True)
 
 # Define the AMR values for each instrument
@@ -83,25 +78,32 @@ PIP_VALUES = {
     'US30': 1
 }
 
-def calculate_volatility_adjusted_setup(account_balance, permitted_loss, pip_value, AMR, volatility_factor=1.0):
+def calculate_volatility_adjusted_setup(account_balance, permitted_loss, pip_value, AMR, desired_profit, volatility_factor=1.0):
     ADR = AMR / 20  
     stop_loss_pips = ADR * volatility_factor
+    take_profit_pips = (desired_profit / pip_value)
     lot_size = permitted_loss / (stop_loss_pips * pip_value)
+    risk_percentage = (permitted_loss / account_balance) * 100
+
     setup = pd.DataFrame({
-        'Metric': ['Average Daily Range (Pips)', 'Volatility Adjusted Stop Loss (Pips)', 'Recommended Lot Size', 'Risk (%)'],
-        'Value': [round(ADR, 2), round(stop_loss_pips, 2), round(lot_size, 2), round((permitted_loss / account_balance) * 100, 2)]
+        'Metric': ['Average Daily Range (Pips)', 'Volatility Adjusted Stop Loss (Pips)', 'Take Profit Pips', 'Recommended Lot Size', 'Risk (%)'],
+        'Value': [round(ADR, 2), round(stop_loss_pips, 2), round(take_profit_pips, 2), round(lot_size, 2), round(risk_percentage, 2)]
     })
     return setup, stop_loss_pips
 
-st.title('🌟 Volatility-Adjusted Trade Calculator')
+st.title('🌟 Enhanced Volatility-Adjusted Trade Calculator')
 
-account_balance = st.number_input('Permitted Daily Loss (€)', value=10000.0)
+# User Inputs
+account_balance = st.number_input('Total Account Balance (€)', value=10000.0)
+permitted_daily_loss_percentage = st.number_input('Permitted Daily Loss (%)', value=1.0)
+permitted_loss = (permitted_daily_loss_percentage / 100) * account_balance
 desired_profit = st.number_input('Desired Profit ($)', value=500.0)
-permitted_loss = st.number_input('Voluntary Loss Taken ($)', value=70.0)
+voluntary_loss = st.number_input('Voluntary Loss Taken ($)', value=70.0)
 instrument = st.selectbox('Select Instrument', list(AMR_VALUES.keys()))
 
+# Market Volatility Conditions Slider
 volatility_factor = st.slider(
-    "Volatility Adjustment Factor (Drag to Adjust)",
+    "Market Volatility Conditions (Drag to Adjust)",
     min_value=0.5,
     max_value=2.0,
     value=1.0,
@@ -111,11 +113,12 @@ volatility_factor = st.slider(
 AMR = AMR_VALUES[instrument]
 pip_value = PIP_VALUES[instrument]
 
-setup, stop_loss_pips = calculate_volatility_adjusted_setup(account_balance, permitted_loss, pip_value, AMR, volatility_factor)
+setup, stop_loss_pips = calculate_volatility_adjusted_setup(account_balance, voluntary_loss, pip_value, AMR, desired_profit, volatility_factor)
 
 st.write(f'## Recommended Trade Setup for {instrument}:')
 st.write(setup)
 
+# Risk Pie Chart
 def plot_risk_pie(risk_percentage):
     fig, ax = plt.subplots(figsize=(6, 6))
     wedges, texts, autotexts = ax.pie(
@@ -132,18 +135,8 @@ def plot_risk_pie(risk_percentage):
     fig.patch.set_alpha(0)
     st.pyplot(fig)
 
-risk_percentage = (permitted_loss / account_balance) * 100
+risk_percentage = (voluntary_loss / account_balance) * 100
 plot_risk_pie(risk_percentage)
 
-def plot_profit_loss(stop_loss_pips, instrument):
-    fig, ax = plt.subplots(figsize=(6, 4))
-    ax.bar(['Stop Loss (Pips)', 'ADR (Pips)'], [stop_loss_pips, AMR / 20], color=['#FFD700', '#444444'])
-    ax.set_title(f'Volatility-Based Stop Loss for {instrument}', color='white')
-    ax.set_ylabel('Pips', color='white')
-    ax.tick_params(colors='white')
-    fig.patch.set_alpha(0)
-    st.pyplot(fig)
-
-plot_profit_loss(stop_loss_pips, instrument)
-
+# Adding dead space at the bottom to avoid Streamlit banner overlap
 st.markdown("<div style='height: 200px;'></div>", unsafe_allow_html=True)
