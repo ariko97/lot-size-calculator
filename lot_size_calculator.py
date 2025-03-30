@@ -80,9 +80,11 @@ PIP_VALUES = {
 
 def calculate_volatility_adjusted_setup(account_balance, voluntary_loss, pip_value, AMR, desired_profit, volatility_factor=1.0):
     ADR = AMR / 20  # Average Daily Range
-    stop_loss_pips = ADR / volatility_factor  # Make sure sliding right increases lot size
-    take_profit_pips = (desired_profit / pip_value)
-    lot_size = voluntary_loss / (stop_loss_pips * pip_value)
+    stop_loss_pips = ADR / volatility_factor  # Adjusted Stop Loss Pips based on Volatility Factor
+    take_profit_pips = desired_profit / pip_value
+
+    # Adjusted lot size calculation considering account balance scaling
+    lot_size = (voluntary_loss / (stop_loss_pips * pip_value)) * (account_balance / 1000)
     risk_percentage = (voluntary_loss / account_balance) * 100
 
     setup = pd.DataFrame({
